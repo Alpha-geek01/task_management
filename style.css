@@ -1,0 +1,9 @@
+body {
+    background-color: #ebf2ff;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .button__radius {
+    border-radius: 15px;
+  }
+  
