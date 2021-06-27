@@ -26,7 +26,7 @@ const generateNewCard = (taskData) => `
     <a href="#" class="btn btn-primary">${taskData.taskType}</a>
   </div>
   <div class="card-footer">
-    <button type="button" class="btn btn-outline-primary float-end">
+    <button type="button" id=${taskData.id} class="btn btn-outline-primary float-end">
       Open Task
     </button>
   </div>
@@ -54,6 +54,9 @@ const loadInitialCardData = () => {
   }) 
 
 };
+
+const updateLocalStorage = () => 
+  localStorage.setItem("tasky",JSON.stringify({ cards: globalStore }));
 
 const saveChanges = () => {
     const taskData ={ 
@@ -124,6 +127,53 @@ const editCard = (event) => {
   taskTitle.setAttribute("contenteditable","true")
   taskDescription.setAttribute("contenteditable","true")
   taskType.setAttribute("contenteditable","true")
-
+  submitButton.setAttribute(
+    "onClick",
+    "saveEditChanges.apply(this, arguments)"
+  );
   submitButton.innerHTML = "Save Changes"
+};
+
+const saveEditChanges = (event) => {
+  event = window.event;
+
+  // id
+  const targetID = event.target.id;
+  //console.log(targetID);
+  const tagname = event.target.tagName;
+
+  let parentElement;
+  
+  if(tagname === "BUTTON"){
+    parentElement = event.target.parentNode.parentNode;
+  }else{
+    parentElement = event.target.parentNode.parentNode.parentNode;
+  }
+
+  let taskTitle = parentElement.childNodes[5].childNodes[1];
+  let taskDescription = parentElement.childNodes[5].childNodes[3];
+  let taskType = parentElement.childNodes[5].childNodes[5];
+
+  let submitButton = parentElement.childNodes[7].childNodes[1];
+
+  const updatedData = {
+    taskTitle: taskTitle.innerHTML,
+    taskDescription: taskDescription.innerHTML, 
+    taskType: taskType.innerHTML,
+  };
+
+  globalStore = globalStore.map((task) => {
+    if(task.id === targetID)
+    {
+      return{
+        id: task.id,
+        imageurl: task.imageurl,
+        taskTitle: updatedData.taskTitle,
+        taskType: updatedData.taskType,
+        taskDescription: updatedData.taskDescription,
+      };
+    }
+    return task; // Important
+  });
+  updateLocalStorage();  
 };
